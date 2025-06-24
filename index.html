@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>定期積立複利シミュレーター</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="src/calculator.js" type="module" defer></script>
+    <script src="js/chart.js" type="module" defer></script>
+    <script src="js/presets.js" type="module" defer></script>
+    <script src="js/urlHandler.js" type="module" defer></script>
+    <script src="src/index.js" type="module"></script> <!-- defer属性を削除 -->
+</head>
+<body>
+    <h1>定期積立複利シミュレーター</h1>
+    <div class="input-section">
+        <div class="form-group">
+            <label for="presetSelect">よくある設定を選択:</label>
+            <select id="presetSelect">
+                <!-- プリセットオプションはJavaScriptで動的に追加 -->
+            </select>
+        </div>
+        <div id="presetDescription" class="description-box">
+            <p>選択されたプリセットの説明が表示されます。</p>
+        </div>
+
+        <form id="compoundForm">
+            <div class="form-group">
+                <label for="principal">初期元本 (万円):</label>
+                <input type="number" id="principal" value="100000" min="0">
+            </div>
+            
+            <h2>期間ごとの設定</h2>
+            <table id="periodsTable">
+                <caption>期間ごとの積立設定</caption>
+                <thead>
+                    <tr>
+                        <th>操作</th>
+                        <th>開始年齢 (歳)</th>
+                        <th>積立期間 (年)</th>
+                        <th>毎月積立額 (円)</th>
+                        <th>年間ボーナス (円)</th>
+                        <th>年利 (%)</th>
+                    </tr>
+                </thead>
+                <tbody id="periodsContainer">
+                    <!-- 期間ごとの設定はJavaScriptで動的に追加 -->
+                </tbody>
+            </table>
+        </form>
+
+        <div class="save-preset-toggle">
+            <a href="#" id="toggleSavePresetLink">この設定をブラウザに保存する</a>
+        </div>
+        <div id="savePresetContainer" class="save-preset-container" style="display: none;">
+            <div class="save-preset-content">
+                <div class="form-group">
+                    <label for="newPresetName">設定保存名:</label>
+                    <input type="text" id="newPresetName" placeholder="例: 私の積立設定">
+                    <button type="button" id="savePreset">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="chart-section">
+        <div id="finalResultsSummary" class="final-results-summary">
+            <!-- シミュレーション結果がここに表示されます -->
+        </div>
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <div id="resultsTableContainer">
+        <h2>年間推移</h2>
+        <button id="toggleTable">テーブル表示/非表示</button>
+        <table id="resultsTable" style="display: none;">
+            <thead>
+                <tr>
+                    <th>年</th>
+                    <th>積立元本</th>
+                    <th>運用収益</th>
+                    <th>運用残高</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- データはJavaScriptで挿入されます -->
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

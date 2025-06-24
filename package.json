@@ -1,0 +1,20 @@
+{
+  "name": "regular-compound-simulator",
+  "version": "1.0.0",
+  "description": "定期積立複利シミュレーター",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node test/browserTest.js",
+    "start": "node src/index.js"
+  },
+  "keywords": [
+    "investment",
+    "simulator",
+    "compound-interest"
+  ],
+  "author": "Garyuten",
+  "license": "MIT",
+  "dependencies": {
+    "puppeteer": "^24.10.2"
+  }
+}
