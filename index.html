@@ -83,9 +83,9 @@
                         </div>
                     </div>
                 </div>
-            <h2 class="text-xl font-bold mb-4">期間ごとの設定</h2>
-            <table id="periodsTable" class="w-auto border-collapse mt-5 mb-5 table-fixed mx-auto">
-                <caption>期間ごとの積立設定</caption>
+            <h2 class="text-xl font-bold mt-12 mb-4">期間ごとの設定</h2>
+            <table id="periodsTable" class="w-auto border-collapse mt-5 mb-5 table-fixed">
+                <!-- <caption>期間ごとの積立設定</caption> -->
                 <thead>
                     <tr>
                         <th class="text-transparent border-none">操作</th>
@@ -100,6 +100,7 @@
             </table>
         </form>
 
+        <!-- 
         <div class="text-right mb-2">
             <a href="#" id="toggleSavePresetLink" class="text-blue-600 underline cursor-pointer text-sm hover:text-blue-800">この設定をブラウザに保存する</a>
         </div>
@@ -112,16 +113,17 @@
                 </div>
             </div>
         </div>
+        -->
     </div>
     <div class="bg-white p-5 rounded-lg shadow-md">
-<h2 class="text-center text-2xl text-gray-700 mb-5">定期積立複利シミュレーション結果</h2>
+<h2 class="text-center text-2xl text-gray-700 m-12">定期積立複利シミュレーション結果</h2>
         <div id="finalResultsSummary" class="text-center mb-5 p-4 bg-blue-100 border border-blue-300 rounded-lg shadow-md">
         </div>
         <canvas id="myChart" class="max-h-96 w-full"></canvas>
     </div>
 
     <div id="resultsTableContainer" class="mt-10">
-        <h2 class="text-xl font-bold mb-4">年間推移</h2>
+        <h2 class="text-xl font-bold mb-4">年間推移 (月複利計算)</h2>
         <table id="resultsTable" class="w-full border-collapse mt-5" style="display: none;">
             <thead>
                 <tr>
