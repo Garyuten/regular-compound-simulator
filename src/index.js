@@ -63,4 +63,72 @@ document.addEventListener('DOMContentLoaded', () => {
             calculateAndDisplayResults();
         });
     }
+    // 「保存」ボタンのイベントハンドラ追加
+    const savePresetButton = document.getElementById('savePreset');
+    if (savePresetButton) {
+        savePresetButton.addEventListener('click', () => {
+            const presetNameInput = document.getElementById('newPresetName');
+            const presetName = presetNameInput ? presetNameInput.value.trim() : '';
+            console.log('[保存ボタン] 入力された保存名:', presetName);
+
+            if (!presetName) {
+                alert('保存名を入力してください');
+                return;
+            }
+
+            // currentPeriods/principal取得
+            const principalInput = document.getElementById('principal');
+            const principal = principalInput ? parseFloat(principalInput.value) * 10000 : 0;
+            console.log('[保存ボタン] principal:', principal);
+            console.log('[保存ボタン] currentPeriods:', currentPeriods);
+
+            // 既存のカスタムプリセットを取得
+            let customPresets = {};
+            try {
+                customPresets = JSON.parse(localStorage.getItem('customPresets')) || {};
+            } catch (e) {
+                console.warn('customPresets parse error:', e);
+            }
+
+            // 保存名の重複チェック
+            if (customPresets[presetName]) {
+                alert('同じ名前のプリセットが既に存在します');
+                return;
+            }
+
+            // 保存データ作成
+            const newPreset = {
+                name: presetName,
+                principal: principal,
+                periods: JSON.parse(JSON.stringify(currentPeriods))
+            };
+            customPresets[presetName] = newPreset;
+            console.log('[保存ボタン] 保存内容:', newPreset);
+
+            // localStorageへ保存
+            try {
+                localStorage.setItem('customPresets', JSON.stringify(customPresets));
+                console.log('[保存ボタン] localStorageへ保存完了');
+            } catch (e) {
+                alert('保存に失敗しました: ' + e.message);
+                return;
+            }
+
+            // プリセットリストを即時更新
+            if (typeof loadCustomPresets === 'function') {
+                // 既存のカスタムプリセットoptionを一旦削除
+                const presetSelect = document.getElementById('presetSelect');
+                if (presetSelect) {
+                    // デフォルトプリセット以外を削除
+                    for (let i = presetSelect.options.length - 1; i >= 0; i--) {
+                        if (!presets[presetSelect.options[i].value]) {
+                            presetSelect.remove(i);
+                        }
+                    }
+                }
+                loadCustomPresets();
+            }
+            alert('プリセットを保存しました');
+        });
+    }
 });
