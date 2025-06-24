@@ -22,7 +22,7 @@ const assert = require('assert'); // Node.jsのassertモジュールを使用
         }
     });
 
-    await page.goto('http://localhost:5500/index.html', { waitUntil: 'networkidle0' });
+    await page.goto('http://localhost:5500/index.html', { waitUntil: 'load' });
     console.log('Page loaded');
 
     // LocalStorageをクリア

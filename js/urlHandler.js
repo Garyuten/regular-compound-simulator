@@ -6,4 +6,3 @@ function getUrlParameter(name) {
 }
 
 // Example usage
-console.log(getUrlParameter('exampleParam'));

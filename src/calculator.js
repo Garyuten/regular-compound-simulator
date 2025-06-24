@@ -11,7 +11,7 @@ class CompoundCalculator {
    */
   calculate(monthlyInvestment, years, annualReturn) {
     const months = years * 12;
-    const monthlyReturn = Math.pow(1 + annualReturn, 1/12) - 1;
+    const monthlyReturn = Math.floor((annualReturn / 12) * 1000) / 1000;
     let totalInvestment = 0;
     let currentValue = 0;
 
@@ -35,22 +35,39 @@ class CompoundCalculator {
    * @param {number} annualReturn - 年間期待収益率（小数）
    * @returns {Array<object>} 各年の計算結果の配列
    */
-  calculateAnnualDetails(monthlyInvestment, years, annualReturn) {
+  /**
+   * 年ごとの詳細な複利計算結果を返す（各月積立ごとに残り月数分の複利を乗算して年末合算）
+   * @param {number} monthlyInvestment - 毎月の積立金額
+   * @param {number} years - 運用年数
+   * @param {number} annualReturn - 年間期待収益率（小数）
+   * @param {number} startAge - 開始年齢
+   * @returns {Array<object>} 各年の計算結果の配列
+   */
+  calculateAnnualDetails(monthlyInvestment, years, annualReturn, startAge = 20) {
     const details = [];
+    const monthlyRate = annualReturn / 12;
     let totalInvestment = 0;
     let currentValue = 0;
-    const monthlyReturn = Math.pow(1 + annualReturn, 1/12) - 1;
 
-    for (let year = 1; year <= years; year++) {
-      for (let i = 0; i < 12; i++) {
+    for (let year = 0; year < years; year++) {
+      let yearStartValue = currentValue;
+      let yearInterest = 0;
+
+      for (let month = 0; month < 12; month++) {
         totalInvestment += monthlyInvestment;
-        currentValue = (currentValue + monthlyInvestment) * (1 + monthlyReturn);
+        // 利息は積立後に付与（期末型）
+        currentValue += monthlyInvestment;
+        const interest = currentValue * monthlyRate;
+        currentValue += interest;
+        yearInterest += interest;
       }
+
       details.push({
-        year: year,
-        totalInvestment: Math.round(totalInvestment),
+        year: startAge + year,
+        totalInvestment: totalInvestment,
+        totalReturn: Math.round(currentValue - totalInvestment),
         finalValue: Math.round(currentValue),
-        totalReturn: Math.round(currentValue - totalInvestment)
+        yearInterest: Math.round(yearInterest)
       });
     }
     return details;
@@ -61,43 +78,58 @@ class CompoundCalculator {
   * @param {Array<object>} periods - 期間設定の配列
   * @returns {object} 計算結果と年間推移データ
   */
- calculateMultiPeriod(initialPrincipal, periods) {
-   let currentPrincipal = initialPrincipal;
-   let totalInvestment = initialPrincipal; // 初期元本も積立総額に含める
+ calculateMultiPeriod(initialPrincipal, periods, globalRate, globalEndAge) {
+   let totalInvestment = initialPrincipal;
+   let currentValue = initialPrincipal;
    const annualData = [];
-   let currentYear = 0; // シミュレーション開始からの経過年数
 
-   periods.forEach(period => {
-     const startAge = period.startAge;
-     const duration = period.duration; // endAgeの代わりにdurationを使用
-     const monthlyContribution = period.monthlyContribution; // monthlyContributionに変更
-     const annualBonus = period.annualBonus;
-     const rate = period.rate;
-     const yearsInPeriod = duration; // 積立期間を直接使用
-     if (yearsInPeriod <= 0) return; // 期間が不正な場合はスキップ
+   // periodsを開始年齢順にソート
+   const sortedPeriods = [...periods].sort((a, b) => a.startAge - b.startAge);
 
-     for (let year = 0; year < yearsInPeriod; year++) {
-       currentYear++;
-       // 毎月積立額を年間積立額に変換して元本に追加
-       currentPrincipal += (monthlyContribution * 12) + annualBonus;
+   let currentAge = sortedPeriods.length > 0 ? parseInt(sortedPeriods[0].startAge, 10) : 0;
+   let periodIdx = 0;
+   const monthlyRate = globalRate / 12;
 
-       // 年間複利計算
-       currentPrincipal = currentPrincipal * (1 + rate);
-       
-       totalInvestment += (monthlyContribution * 12) + annualBonus; // 積立総額に年間積立額とボーナスを追加
-
-       annualData.push({
-         year: currentYear,
-         totalInvestment: Math.round(totalInvestment),
-         finalValue: Math.round(currentPrincipal),
-         totalReturn: Math.round(currentPrincipal - totalInvestment)
-       });
+   for (let year = currentAge; year <= globalEndAge; year++) {
+     // 現在のperiodを取得
+     while (
+       periodIdx < sortedPeriods.length - 1 &&
+       year >= parseInt(sortedPeriods[periodIdx + 1].startAge, 10)
+     ) {
+       periodIdx++;
      }
-   });
+     const period = sortedPeriods[periodIdx];
+     const monthlyContribution = parseFloat(period.monthlyContribution) || 0;
+     const annualBonus = parseFloat(period.annualBonus) || 0;
 
-   const finalValue = currentPrincipal;
-   const totalReturn = finalValue - initialPrincipal; // 収益額は最終評価額から初期元本を引く
-   const returnRate = (initialPrincipal > 0) ? (finalValue / initialPrincipal - 1) * 100 : 0; // 初期元本が0の場合は収益率も0
+     let yearInterest = 0;
+     for (let m = 0; m < 12; m++) {
+       // 毎月積立
+       currentValue += monthlyContribution;
+       totalInvestment += monthlyContribution;
+       // ボーナスは1月に加算（必要なら他月に変更可）
+       if (annualBonus && m === 0) {
+         currentValue += annualBonus;
+         totalInvestment += annualBonus;
+       }
+       // 利息付与
+       const interest = currentValue * monthlyRate;
+       currentValue += interest;
+       yearInterest += interest;
+     }
+
+     annualData.push({
+       year: year,
+       totalInvestment: Math.round(totalInvestment),
+       finalValue: Math.round(currentValue),
+       totalReturn: Math.round(currentValue - totalInvestment),
+       yearInterest: Math.round(yearInterest)
+     });
+   }
+
+   const finalValue = currentValue;
+   const totalReturn = finalValue - totalInvestment;
+   const returnRate = (totalInvestment > 0) ? (finalValue / totalInvestment - 1) * 100 : 0;
 
    return {
      annualData,

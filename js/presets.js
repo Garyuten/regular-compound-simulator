@@ -1,188 +1,85 @@
 // presets.js
 
 const presets = {
-    default: {
-        name: "デフォルト",
-        description: "一般的な積立シミュレーション",
-        periods: [
-            {
-                startAge: 20,
-                endAge: 60,
-                annualContribution: 120000, // 月1万円
-                annualBonus: 0,
-                rate: 0.05,
-                timesCompounded: 12
-            }
-        ]
-    },
-    highInterest: {
-        name: "高金利",
-        description: "高金利での積立シミュレーション",
-        periods: [
-            {
-                startAge: 20,
-                endAge: 60,
-                annualContribution: 120000,
-                annualBonus: 0,
-                rate: 0.1,
-                timesCompounded: 12
-            }
-        ]
-    },
-    newGraduate22_24: {
-        name: "新卒 (22-24歳)",
-        description: "新卒1〜3年目の積立シミュレーション",
-        periods: [
-            {
-                startAge: 22,
-                endAge: 24,
-                annualContribution: 60000, // 月5千円
-                annualBonus: 0,
-                rate: 0.03,
-                timesCompounded: 12
-            },
-            {
-                startAge: 25,
-                endAge: 60,
-                annualContribution: 120000, // 月1万円
-                annualBonus: 0,
-                rate: 0.03,
-                timesCompounded: 12
-            }
-        ]
-    },
-    newGraduate25_29: {
-        name: "新卒 (25-29歳)",
-        description: "新卒4〜8年目の積立シミュレーション",
-        periods: [
-            {
-                startAge: 25,
-                endAge: 29,
-                annualContribution: 120000, // 月1万円
-                annualBonus: 0,
-                rate: 0.04,
-                timesCompounded: 12
-            },
-            {
-                startAge: 30,
-                endAge: 60,
-                annualContribution: 240000, // 月2万円
-                annualBonus: 0,
-                rate: 0.04,
-                timesCompounded: 12
-            }
-        ]
-    },
-    newGraduate30Plus: {
-        name: "新卒 (30歳以降)",
-        description: "新卒9年目以降の積立シミュレーション",
-        periods: [
-            {
-                startAge: 30,
-                endAge: 60,
-                annualContribution: 360000, // 月3万円
-                annualBonus: 0,
-                rate: 0.05,
-                timesCompounded: 12
-            }
-        ]
-    },
-    studentLoan: {
-        name: "学生 (奨学金返済考慮)",
-        description: "奨学金返済を考慮した学生の積立シミュレーション",
-        periods: [
-            {
-                startAge: 18,
-                endAge: 22,
-                annualContribution: 12000, // 月1千円
-                annualBonus: 0,
-                rate: 0.01,
-                timesCompounded: 12
-            },
-            {
-                startAge: 23,
-                endAge: 27, // 奨学金返済期間
-                annualContribution: 60000, // 月5千円
-                annualBonus: 0,
-                rate: 0.03,
-                timesCompounded: 12
-            },
-            {
-                startAge: 28,
-                endAge: 60,
-                annualContribution: 120000, // 月1万円
-                annualBonus: 0,
-                rate: 0.04,
-                timesCompounded: 12
-            }
-        ]
-    },
-    careerChange: {
-        name: "社会人転職",
-        description: "転職後の積立シミュレーション",
-        periods: [
-            {
-                startAge: 25,
-                endAge: 29, // 転職直後
-                annualContribution: 60000, // 月5千円
-                annualBonus: 0,
-                rate: 0.03,
-                timesCompounded: 12
-            },
-            {
-                startAge: 30,
-                endAge: 60,
-                annualContribution: 180000, // 月1.5万円
-                annualBonus: 0,
-                rate: 0.04,
-                timesCompounded: 12
-            }
-        ]
-    },
-    familyPlanning: {
-        name: "家族計画",
-        description: "家族計画を考慮した積立シミュレーション",
-        periods: [
-            {
-                startAge: 30,
-                endAge: 35, // 子育て初期
-                annualContribution: 60000, // 月5千円
-                annualBonus: 0,
-                rate: 0.03,
-                timesCompounded: 12
-            },
-            {
-                startAge: 36,
-                endAge: 45, // 子育て中期
-                annualContribution: 120000, // 月1万円
-                annualBonus: 0,
-                rate: 0.04,
-                timesCompounded: 12
-            },
-            {
-                startAge: 46,
-                endAge: 60, // 子育て後期〜老後
-                annualContribution: 240000, // 月2万円
-                annualBonus: 0,
-                rate: 0.05,
-                timesCompounded: 12
-            }
-        ]
-    },
-    retirementPlanning: {
-        name: "老後資金計画",
-        description: "老後資金のための積立シミュレーション",
-        periods: [
-            {
-                startAge: 40,
-                endAge: 60,
-                annualContribution: 360000, // 月3万円
-                annualBonus: 100000, // 年間ボーナス10万円
-                rate: 0.04,
-                timesCompounded: 12
-            }
-        ]
-    }
+  default: {
+    name: "サンプル：男性・年代別の年収中央値の10%積立",
+    description:
+      "年代の年収中央値の10%を月々積み立てた複利シミュレーション（5%年利）<br>毎月給与換算：20代	約30.0万円 / 30代	約38.5万円 / 40代 約45.8万円 / 50代 約50.0万円<br>※ボーナスを含めた年収を12で割った数値　※出典：<a href='https://doda.jp/guide/heikin/median/?utm_source=chatgpt.com' target='_blank'>doda</a><br>",
+    principal: 0,
+    periods: [
+      {
+        startAge: 20,
+        duration: 10,
+        monthlyContribution: 3,
+        annualBonus: 0,
+        rate: 0.05,
+        timesCompounded: 12,
+      },
+      {
+        startAge: 30,
+        duration: 10,
+        monthlyContribution: 3.85,
+        annualBonus: 0,
+        rate: 0.05,
+        timesCompounded: 12,
+      },
+      {
+        startAge: 40,
+        duration: 10,
+        monthlyContribution: 4.58,
+        annualBonus: 0,
+        rate: 0.05,
+        timesCompounded: 12,
+      },
+      {
+        startAge: 50,
+        duration: 10,
+        monthlyContribution: 5.,
+        annualBonus: 0,
+        rate: 0.05,
+        timesCompounded: 12,
+      },
+    ],
+    finalTotal: 23276814,
+    logs: [
+      {
+        startAge: 20,
+        endAge: 29,
+        monthlyContribution: 23300.0,
+        annualBonus: 0,
+        rate: 0.05,
+        durationYears: 10,
+        totalAtEnd: 3618077,
+      },
+      {
+        startAge: 30,
+        endAge: 39,
+        monthlyContribution: 33300.0,
+        annualBonus: 0,
+        rate: 0.05,
+        durationYears: 10,
+        totalAtEnd: 8788977,
+      },
+      {
+        startAge: 40,
+        endAge: 49,
+        monthlyContribution: 43300.0,
+        annualBonus: 0,
+        rate: 0.05,
+        durationYears: 10,
+        totalAtEnd: 15512700,
+      },
+      {
+        startAge: 50,
+        endAge: 59,
+        monthlyContribution: 50000.0,
+        annualBonus: 0,
+        rate: 0.05,
+        timesCompounded: 12,
+        totalAtEnd: 23276814,
+      },
+    ],
+  },
 };
 
 // ES Modules形式でエクスポート

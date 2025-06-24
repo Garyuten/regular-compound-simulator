@@ -15,6 +15,7 @@
   "author": "Garyuten",
   "license": "MIT",
   "dependencies": {
-    "puppeteer": "^24.10.2"
+    "puppeteer": "^24.10.2",
+    "tailwindcss": "^4.1.10"
   }
 }

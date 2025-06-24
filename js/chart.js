@@ -39,15 +39,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     intersect: false
                 },
                 title: {
-                    display: true,
-                    text: '積立シミュレーション結果'
+                    display: false
                 }
             },
             scales: {
                 x: {
                     title: {
                         display: true,
-                        text: '年'
+                        text: '年齢'
                     }
                 },
                 y: {
@@ -66,19 +65,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const toggleTableButton = document.getElementById('toggleTable');
     const resultsTable = document.getElementById('resultsTable');
+    resultsTable.style.display = "table";
 
-    toggleTableButton.addEventListener('click', () => {
-        if (resultsTable.style.display === 'none') {
-            resultsTable.style.display = 'table';
-        } else {
-            resultsTable.style.display = 'none';
-        }
-    });
 });
 
 function updateChartAndTable(annualDetails) {
+    // データが空の場合は何もしない
+    if (!Array.isArray(annualDetails) || annualDetails.length === 0) return;
+    // annualDetailsの内容をログ出力
+    console.log('annualDetails:', annualDetails);
     // グラフの更新
-    myChart.data.labels = annualDetails.map(detail => `Year ${detail.year}`);
+    const startAge = annualDetails[0].year; // 修正: 年齢を取得
+    console.log('Start Age:', startAge); // startAgeをコンソールに出力
+    // 修正済み: 二重宣言を削除
+    myChart.data.labels = annualDetails.map((detail, index) => startAge + index); // 修正: 開始年齢からの年数をラベルに設定
+    // 60を強制的にpushする処理を削除
+    myChart.data.datasets[0].data = annualDetails.map(detail => detail.finalValue);
+    myChart.data.datasets[1].data = annualDetails.map(detail => detail.totalInvestment);
+    myChart.update();
     myChart.data.datasets[0].data = annualDetails.map(detail => detail.finalValue);
     myChart.data.datasets[1].data = annualDetails.map(detail => detail.totalInvestment);
     myChart.update();
@@ -89,10 +93,13 @@ function updateChartAndTable(annualDetails) {
 
     annualDetails.forEach(detail => {
         const row = tbody.insertRow();
-        row.insertCell().textContent = detail.year;
-        row.insertCell().textContent = detail.totalInvestment.toLocaleString();
-        row.insertCell().textContent = detail.totalReturn.toLocaleString();
-        row.insertCell().textContent = detail.finalValue.toLocaleString();
+        row.setAttribute('role', 'row');
+        row.innerHTML = `
+            <td role="cell" class="border border-gray-300 p-2 text-right">${detail.year}</td>
+            <td role="cell" class="border border-gray-300 p-2 text-right">${detail.totalInvestment.toLocaleString()}</td>
+            <td role="cell" class="border border-gray-300 p-2 text-right">${detail.totalReturn.toLocaleString()}</td>
+            <td role="cell" class="border border-gray-300 p-2 text-right">${detail.finalValue.toLocaleString()}</td>
+        `;
     });
 }
 

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>定期積立複利シミュレーター</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <script src="src/calculator.js" type="module" defer></script>
@@ -12,80 +13,135 @@
     <script src="js/urlHandler.js" type="module" defer></script>
     <script src="src/index.js" type="module"></script> <!-- defer属性を削除 -->
 </head>
-<body>
-    <h1>定期積立複利シミュレーター</h1>
-    <div class="input-section">
-        <div class="form-group">
-            <label for="presetSelect">よくある設定を選択:</label>
-            <select id="presetSelect">
+<body class="font-sans m-0 px-10 py-5 bg-gray-50">
+    <h1 class="text-center text-3xl text-gray-800 mb-5">定期積立複利シミュレーター</h1>
+    <div class="bg-white p-5 rounded-lg shadow-md mb-5 text-left">
+        <div class="mb-4">
+            <label for="presetSelect" class="block mb-1 font-bold text-gray-700">よくある設定を選択:</label>
+            <select id="presetSelect" class="w-full p-2 border border-gray-300 rounded-md text-base">
                 <!-- プリセットオプションはJavaScriptで動的に追加 -->
             </select>
         </div>
-        <div id="presetDescription" class="description-box">
+        <div id="presetDescription" class="bg-green-100 border border-green-300 rounded-md p-4 mb-5 text-green-800">
             <p>選択されたプリセットの説明が表示されます。</p>
         </div>
 
         <form id="compoundForm">
-            <div class="form-group">
-                <label for="principal">初期元本 (万円):</label>
-                <input type="number" id="principal" value="100000" min="0">
-            </div>
-            
-            <h2>期間ごとの設定</h2>
-            <table id="periodsTable">
+            <div class="mb-4">
+                <div class="mb-4 flex flex-row flex-wrap gap-8">
+                    <div>
+                        <label for="principal" class="block mb-1 font-bold text-gray-700">初期元本</label>
+                        <input
+                          type="number"
+                          id="principal"
+                          value="100"
+                          min="0"
+                          step="0.1"
+                          inputmode="decimal"
+                          autocomplete="off"
+                          class="w-32 p-4 border-2 border-gray-400 rounded-lg text-2xl font-bold text-right focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-200"
+                          placeholder="例: 100"
+                        />
+                        <span class="text-2xl text-gray-700 font-bold">万円</span>
+                    </div>
+                    <div>
+                        <label for="globalRate" class="block mb-1 font-bold text-gray-700">年利</label>
+                        <div class="flex items-center gap-1">
+                          <input
+                            type="number"
+                            id="globalRate"
+                            value="3.0"
+                            min="0"
+                            max="99.99"
+                            step="0.01"
+                            class="w-24 p-4 border-2 border-gray-400 rounded-lg text-2xl font-bold text-right focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-200"
+                            style="ime-mode:disabled;"
+                            placeholder="0.00"
+                          />
+                          <span class="text-2xl text-gray-700 font-bold">%</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="globalEndAge" class="block mb-1 font-bold text-gray-700">終了年齢</label>
+                        <div class="flex flex-row gap-1 items-end relative">
+                          <div class="flex flex-col relative">
+                            <input
+                              type="number"
+                              id="globalEndAge"
+                              value="65"
+                              min="0"
+                              max="120"
+                              class="w-24 p-4 border-2 border-gray-400 rounded-lg text-2xl font-bold text-right focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-200"
+                              style="ime-mode:disabled;"
+                              placeholder="65"
+                            />
+                          </div>
+                          <span class="text-2xl text-gray-700 font-bold ml-1">歳まで</span>
+                        </div>
+                        <!-- 注意文表示エリア -->
+                        <div class="text-sm text-red-500 mt-1" id="endAgeWarningContainer" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+            <h2 class="text-xl font-bold mb-4">期間ごとの設定</h2>
+            <table id="periodsTable" class="w-auto border-collapse mt-5 mb-5 table-fixed mx-auto">
                 <caption>期間ごとの積立設定</caption>
                 <thead>
                     <tr>
-                        <th>操作</th>
-                        <th>開始年齢 (歳)</th>
-                        <th>積立期間 (年)</th>
-                        <th>毎月積立額 (円)</th>
-                        <th>年間ボーナス (円)</th>
-                        <th>年利 (%)</th>
+                        <th class="text-transparent border-none">操作</th>
+                        <th class="bg-gray-200 font-bold border border-gray-300 p-2 text-center align-middle">開始年齢<br> (歳)</th>
+                        <th class="bg-gray-200 font-bold border border-gray-300 p-2 text-center align-middle">毎月積立額<br> (万円)</th>
+                        <th class="bg-gray-200 font-bold border border-gray-300 p-2 text-center align-middle">年間ボーナス<br>(万円)</th>
                     </tr>
                 </thead>
-                <tbody id="periodsContainer">
+                <tbody id="periodsContainer" aria-busy="true">
                     <!-- 期間ごとの設定はJavaScriptで動的に追加 -->
                 </tbody>
             </table>
         </form>
 
-        <div class="save-preset-toggle">
-            <a href="#" id="toggleSavePresetLink">この設定をブラウザに保存する</a>
+        <div class="text-right mb-2">
+            <a href="#" id="toggleSavePresetLink" class="text-blue-600 underline cursor-pointer text-sm hover:text-blue-800">この設定をブラウザに保存する</a>
         </div>
-        <div id="savePresetContainer" class="save-preset-container" style="display: none;">
-            <div class="save-preset-content">
-                <div class="form-group">
-                    <label for="newPresetName">設定保存名:</label>
-                    <input type="text" id="newPresetName" placeholder="例: 私の積立設定">
-                    <button type="button" id="savePreset">保存</button>
+        <div id="savePresetContainer" class="block ml-auto mr-0 w-fit" style="display: none;">
+            <div class="bg-gray-50 border border-gray-300 rounded-md p-4 pt-6 mt-2 mb-5 relative inline-block">
+                <div class="mb-2 flex items-center gap-2">
+                    <label for="newPresetName" class="flex-grow-0">設定保存名:</label>
+                    <input type="text" id="newPresetName" placeholder="例: 私の積立設定" class="flex-grow p-2 border border-gray-300 rounded-md text-base">
+                    <button type="button" id="savePreset" class="px-4 py-2 bg-blue-600 text-white border-none rounded-md cursor-pointer text-base hover:bg-blue-700 mt-0">保存</button>
                 </div>
             </div>
         </div>
     </div>
-    <div class="chart-section">
-        <div id="finalResultsSummary" class="final-results-summary">
-            <!-- シミュレーション結果がここに表示されます -->
+    <div class="bg-white p-5 rounded-lg shadow-md">
+<h2 class="text-center text-2xl text-gray-700 mb-5">定期積立複利シミュレーション結果</h2>
+        <div id="finalResultsSummary" class="text-center mb-5 p-4 bg-blue-100 border border-blue-300 rounded-lg shadow-md">
         </div>
-        <canvas id="myChart"></canvas>
+        <canvas id="myChart" class="max-h-96 w-full"></canvas>
     </div>
 
-    <div id="resultsTableContainer">
-        <h2>年間推移</h2>
-        <button id="toggleTable">テーブル表示/非表示</button>
-        <table id="resultsTable" style="display: none;">
+    <div id="resultsTableContainer" class="mt-10">
+        <h2 class="text-xl font-bold mb-4">年間推移</h2>
+        <table id="resultsTable" class="w-full border-collapse mt-5" style="display: none;">
             <thead>
                 <tr>
-                    <th>年</th>
-                    <th>積立元本</th>
-                    <th>運用収益</th>
-                    <th>運用残高</th>
+                    <th class="border border-gray-300 p-2 text-right bg-gray-200 text-center">年齢</th>
+                    <th class="border border-gray-300 p-2 text-right bg-gray-200 text-center">積立元本</th>
+                    <th class="border border-gray-300 p-2 text-right bg-gray-200 text-center">運用収益</th>
+                    <th class="border border-gray-300 p-2 text-right bg-gray-200 text-center">評価額</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody aria-busy="true">
                 <!-- データはJavaScriptで挿入されます -->
             </tbody>
         </table>
+    </div>
+<div class="bg-yellow-100 border-l-4 border-yellow-400 rounded p-4 text-xs text-gray-700 mt-10 mb-4 max-w-2xl mx-auto">
+      <strong>【免責事項・ご注意】</strong><br>
+    ※ 計算された数値は、あくまでもシミュレーションであり、将来の市場環境の変動や運用成果等を示唆および保証するものではありません。また、税金、手数料、費用等を考慮しておりません。<br>
+    ※ 本シミュレーションは、1ヵ月に1回再投資した複利で計算しています。<br>
+    ※ シミュレーション結果は、過去の実績を基にしたものではなく、将来の運用成果を保証するものではありません。<br>
+    ※ 本サービスの利用により生じたいかなる損失・損害についても、当方は一切の責任を負いかねますのでご了承ください。
     </div>
 </body>
 </html>
